@@ -1,30 +1,29 @@
 package org.ea.service;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 
 public class App {
- 
-    public static void main(String[] args) {
- 
-        Connection conn = null;
-        try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            conn = DriverManager.getConnection("jdbc:sqlserver://localhost:1433/TestDB","sa","secret");
-            if (conn != null) {
-                System.out.println("Connected");
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }finally {
-            try {
-                if (conn != null && !conn.isClosed()) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
+
+	public static Connection connObj;
+	public static String JDBC_URL = "jdbc:sqlserver://localhost;databaseName=tempdb;integratedSecurity=false";
+
+	public static void getDbConnection() {
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			connObj = DriverManager.getConnection(JDBC_URL,"sa","<yourPassword>");
+			if(connObj != null) {
+				DatabaseMetaData metaObj = (DatabaseMetaData) connObj.getMetaData();
+				System.out.println("Connected");
+				System.out.println("Driver Name?= " + metaObj.getDriverName() + ", Driver Version?= " + metaObj.getDriverVersion() + ", Product Name?= " + metaObj.getDatabaseProductName() + ", Product Version?= " + metaObj.getDatabaseProductVersion());
+			}
+		} catch(Exception sqlException) {
+			sqlException.printStackTrace();
+		}
+	}
+
+	public static void main(String[] args) {
+		getDbConnection();
+	}
 }
